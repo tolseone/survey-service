@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"os"
 
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -16,6 +16,12 @@ type Config struct {
 }
 
 func LoadConfig() Config {
+	// Load environment variables from .env file
+	err := godotenv.Load()
+	if err != nil {
+		panic("Ошибка загрузки файла .env")
+	}
+
 	var settings Config
 
 	settings.MattermostTeamName = os.Getenv("MM_TEAM")
