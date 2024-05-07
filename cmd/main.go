@@ -71,7 +71,24 @@ func main() {
 		app.MattermostUser = user
 	}
 
-	time.Sleep(2 * time.Second)
+	// Find and save the bot's team to app struct.
+	if team, resp, err := app.MattermostClient.GetTeamByName(app.Config.MattermostTeamName, ""); err != nil {
+		app.Logger.Fatal().Err(err).Msg("Could not find team. Is this bot a member ?")
+	} else {
+		app.Logger.Debug().Interface("team", team).Interface("resp", resp).Msg("")
+		app.MattermostTeam = team
+	}
+
+	// Find and save the talking channel to app struct.
+	if channel, resp, err := app.MattermostClient.GetChannelByName(
+		app.Config.MattermostChannel, app.MattermostTeam.Id, "",
+	); err != nil {
+		app.Logger.Fatal().Err(err).Msg("Could not find channel. Is this bot added to that channel ?")
+	} else {
+		app.Logger.Debug().Interface("channel", channel).Interface("resp", resp).Msg("")
+		app.MattermostChannel = channel
+	}
+
 	// Send a message (new post).
 	appl.SendMsgToTalkingChannel(app, "Hi! I am a bot.", "")
 
